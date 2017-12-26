@@ -1,3 +1,5 @@
+//import { HUBProfiles } from "meteor/capx-hub-adapter";
+
 /* globals menu*/
 
 Template.sideNav.helpers({
@@ -14,11 +16,43 @@ Template.sideNav.helpers({
 	},
 
 	roomType() {
-		return RocketChat.roomTypes.getTypes();
+		const roomTypes = RocketChat.roomTypes.getTypes();
+		return _.where(roomTypes, {identifier: 'p'});
 	},
 
 	loggedInUser() {
 		return !!Meteor.userId();
+	},
+
+	isInCsCompany() {
+		const profile = Template.instance().profile.get();
+		let isInCsCompany = false;
+
+		if(!_.isEmpty(profile)) {
+			isInCsCompany = profile.companyId.indexOf('CS') > -1;
+		}
+		
+		return isInCsCompany;
+	},
+
+	hubAmount() {
+		const hub = Template.instance().hub.get();
+		let amount = '';
+		if(!_.isEmpty(hub)) {
+			amount = HUBAdapter.formattedAmount(hub.transaction.total);
+		}
+
+		return amount;
+	},
+
+	hubType() {
+		const hub = Template.instance().hub.get();
+		let type = '';
+		if(!_.isEmpty(hub)) {
+			type = hub.transaction.type;
+		}
+
+		return type;
 	}
 });
 
@@ -77,5 +111,27 @@ Template.sideNav.onCreated(function() {
 		}
 
 		this.mergedChannels.set((userPref != null) ? userPref : RocketChat.settings.get('UI_Merge_Channels_Groups'));
+	});
+
+	const self = this;
+	self.profile = new ReactiveVar({}); 
+	Session.set('HUBProfile', {});
+	this.subscribe('profile.get', function(){
+		const rocketChatId = Meteor.userId();
+		const profile = HUBProfiles.findOne({'rocketChat._id': rocketChatId});
+		self.profile.set(profile);
+		Session.set('HUBProfile', profile);
+	});
+
+	self.hub = new ReactiveVar({});
+
+	this.subscribe('hub.get',function() {
+		const rocketChatId = Meteor.userId();
+		const profile = HUBProfiles.findOne({'rocketChat._id': rocketChatId});
+		const hub = HUB.findOne();
+		self.hub.set(hub);
+		const companyTeam = Team.findOne({type: 'COMPANY', $or: [{ownerUserIds: {$in: [profile.userId]}}, {leaderUserIds: {$in: [profile.userId]}}, {memberUserIds: {$in: [profile.userId]}}]});
+
+		
 	});
 });

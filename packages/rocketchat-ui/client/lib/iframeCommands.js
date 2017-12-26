@@ -62,6 +62,13 @@ const commands = {
 		const toolbar = Session.get('toolbarButtons') || { buttons: {} };
 		delete toolbar.buttons[id];
 		Session.set('toolbarButtons', toolbar);
+	},
+	'set-hub-context'({hubId}) {
+		console.log('hub Id: ', hubId);
+		Session.set('currentHUBId', hubId);
+	},
+	'set-dealroom-context'({dealRoomId}) {
+		Session.set('currentDealRoomId', dealRoomId);
 	}
 };
 
@@ -81,6 +88,7 @@ window.addEventListener('message', (e) => {
 	}
 
 	const command = commands[e.data.externalCommand];
+	console.log(command);
 	if (command) {
 		command(e.data, e);
 	}

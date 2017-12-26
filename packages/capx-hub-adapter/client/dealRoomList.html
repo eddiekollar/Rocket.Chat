@@ -1,0 +1,18 @@
+<template name="dealRoomList">
+  <ul class="rooms-list__list">
+    {{#each dealRooms}}
+      <li class="sidebar-item">
+        <div class='sidebar-item__name'>
+          {{dealSummary.type}}
+        </div>
+        <div class="sidebar-item__menu">
+          {{> icon block="sidebar-item__menu-icon" icon="menu"}}
+        </div>
+      </li>
+      {{#each getChannels chatGroups}}
+        {{> chatRoomItem getRoom _id }}
+        
+      {{/each}}
+    {{/each}}
+  </ul>
+</template>
