@@ -1,0 +1,13 @@
+<template name="companyRoom">
+  <ul class="rooms-list__list">
+    {{> chatRoomItem getRoom}}
+    {{#each teamMembers}}
+      <li class="sidebar-item status-online">
+        <div class='sidebar-item__name username' style="text-align: right">
+          {{> icon block="sidebar-item__user-icon" icon="user"}}
+          {{name}}
+        </div>
+      </li>
+    {{/each}}
+  </ul>
+</template>

@@ -1,15 +1,3 @@
-function getGroupLabel(rocketGroupId) {
-  let label = '';
-  const hubProfile = Session.get('HUBProfile');
-  if(hubProfile) {
-		const group = ChatGroup.findOne({'rocketGroup._id': rocketGroupId});
-    const otherTeam = Team.findOne({_id: {$in: group.teamIds}, companyId: {$ne: hubProfile.companyId}});
-    label = (otherTeam && otherTeam.displayName) ? otherTeam.displayName : '';
-  }
-  
-  return label;
-}
-
 Template.chatRoomItem.helpers({
 	roomData() {
 		// let {name} = this;
@@ -18,7 +6,8 @@ Template.chatRoomItem.helpers({
 		// if ((realNameForDirectMessages || realNameForChannel) && this.fname) {
 		// 	name = this.fname;
 		// }
-		const name = getGroupLabel(this.rid);
+		//!! Add detection for capx-hub-integration instead commenting out the above
+		const name = this.label;
 
 		let unread = false;
 		if (((FlowRouter.getParam('_id') !== this.rid) || !document.hasFocus()) && (this.unread > 0)) {

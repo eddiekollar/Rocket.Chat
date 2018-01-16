@@ -1,0 +1,36 @@
+<template name="hubUserInfo">
+    {{#if isLoading}}
+      {{> loading}}
+    {{else}}
+      {{#if user}}
+        {{#with user}}
+        <div class="about clearfix">
+          <div class="info">
+            <h3 title="{{name}}"><i class="status-{{status}}"></i> {{name}}</h3>
+            <p class="secondary-font-color">@{{username}}</p>
+            <p class="secondary-font-color">
+              {{#each roleTags}}
+                <span class="role-tag" data-role="{{description}}">{{description}}</span>
+              {{/each}}
+            </p>
+            {{#if utc}}<p class="secondary-font-color"><i class="icon-clock"></i>{{userTime}} (UTC {{utc}})</p>{{/if}}
+          </div>
+        </div>
+        {{/with}}
+        <nav>
+          {{#unless isSelf user.username}}
+            {{#if showAll}}
+              {{#if canRemoveUser}}
+                <button class="button button-block danger remove-user-deal-room"><span>Remove from Deal Room</span></button>
+              {{/if}}
+            {{/if}}
+          {{/unless}}
+  
+          {{#if showAll}}
+            <button class='button back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
+          {{/if}}
+        </nav>
+      {{/if}}
+    {{/if}}
+  </template>
+  

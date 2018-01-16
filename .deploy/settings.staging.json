@@ -1,0 +1,13 @@
+{
+  "public": {
+
+  },
+  "private": {
+    "S3": {
+      "key": "AKIAJPZU2TP4K5FN3P7A",
+      "secret": "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",
+      "bucket": "capx-hub-staging",
+      "region": "us-west-1"
+    }
+  }
+}

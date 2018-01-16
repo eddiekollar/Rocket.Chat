@@ -11,3 +11,7 @@ HUBAdapter.getChatRoomLabel = function(roomId) {
 HUBAdapter.formattedAmount = function(amount) {
   return numeral(amount).format('$0,0.00');
 }
+
+HUBAdapter.formatteShortHanddAmount = function(amount) {
+  return numeral(amount).format('($ 0.00 a)');
+}

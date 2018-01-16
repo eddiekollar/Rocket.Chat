@@ -1,0 +1,142 @@
+.memberlist-item {
+  display: flex;
+}
+
+.modal .shadow {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 100;
+	background-color: rgba(200, 200, 200, 0.4);
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 100; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 95%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.grid .row {
+  flex-direction: row;
+}
+.grid .row .file-name {
+  width: 15%;
+}
+.grid .row .dropdown-list {
+  width: fit-content;
+}
+
+.row .custom-file-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.row .fileinputs {
+  position: relative;
+  display: inline;
+}
+
+.row .fakefile {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 1;
+}
+
+.row input[type="file"] {
+	position: relative;
+  text-align: right;
+  opacity: 0;
+	z-index: 2;
+  filter: alpha(opacity=0);
+  width: 150px;
+};
+
+#all-users {
+  border: 0.5px solid;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.all-users {
+  background-color: #f2711c;
+}
+
+.file-permission {
+  float: right;
+}
+
+.multiselect {
+  width: fit-content;
+}
+
+.multiselect .selectBox {
+  position: relative;
+}
+
+.selectBox select {
+  width: 100%;
+  font-weight: bold;
+}
+
+.overSelect {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.multiselect #checkboxes {
+  display: none;
+  border: 1px #dadada solid;
+}
+
+#checkboxes label {
+  display: block;
+}
+
+#checkboxes label:hover {
+  background-color: #1e90ff;
+}

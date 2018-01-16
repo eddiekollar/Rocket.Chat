@@ -149,7 +149,20 @@ window.addEventListener('message', (e) => {
 				}
 			});
 			break;
-
+		
+		case 'logout':
+			const user = Meteor.user();
+	
+			Meteor.logout(() => {
+				if(user) {
+					Meteor.users.update({_id: user._id},{'services.resume.loginTokens': []});
+					RocketChat.callbacks.run('afterLogoutCleanUp', user);
+					Meteor.call('logoutCleanUp', user);
+				}
+				return FlowRouter.go('home');
+			});
+			
+			break;
 		case 'login-with-token':
 			RocketChat.iframeLogin.loginWithToken(e.data, (error) => {
 				if (error) {

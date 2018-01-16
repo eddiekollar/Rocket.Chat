@@ -24,7 +24,7 @@ const openProfileTab = (e, instance, username) => {
 		instance.setUserDetail(username);
 	}
 
-	instance.tabBar.setTemplate('membersList');
+	instance.tabBar.setTemplate('teamMembersList'); //membersList
 	instance.tabBar.open();
 };
 
@@ -121,6 +121,11 @@ const mountPopover = (e, i, outerContext) => {
 };
 
 Template.room.helpers({
+	isHubActive() {
+		const hubInfo = Session.get('hubInfo');
+		return !_.isEmpty(hubInfo);
+	},
+
 	isTranslated() {
 		const sub = ChatSubscription.findOne({ rid: this._id }, { fields: { autoTranslate: 1, autoTranslateLanguage: 1 } });
 		RocketChat.settings.get('AutoTranslate_Enabled') && ((sub != null ? sub.autoTranslate : undefined) === true) && (sub.autoTranslateLanguage != null);
@@ -226,6 +231,8 @@ Template.room.helpers({
 	roomName() {
 		const roomData = Session.get(`roomData${ this._id }`);
 		if (!roomData) { return ''; }
+
+		console.log(roomData);
 
 		return RocketChat.roomTypes.getRoomName(roomData.t, roomData);
 	},
@@ -934,12 +941,12 @@ Template.room.onRendered(function() {
 		Tracker.autorun(() => {
 			const remoteItems = webrtc.remoteItems.get();
 			if (remoteItems && remoteItems.length > 0) {
-				this.tabBar.setTemplate('membersList');
+				this.tabBar.setTemplate('teamMembersList'); //membersList
 				this.tabBar.open();
 			}
 
 			if (webrtc.localUrl.get() != null) {
-				this.tabBar.setTemplate('membersList');
+				this.tabBar.setTemplate('teamMembersList'); //membersList
 				this.tabBar.open();
 			}
 		});

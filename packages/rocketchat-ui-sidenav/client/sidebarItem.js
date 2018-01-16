@@ -6,11 +6,19 @@ Template.sidebarItem.helpers({
 	},
 	isRoom() {
 		return this.rid || this._id;
+	},
+	isHubNavActive() {
+		const hubInfo = Session.get('hubInfo');
+		const isActive = hubInfo && !_.isEmpty(hubInfo);
+		return isActive;
 	}
 });
 
 Template.sidebarItem.events({
 	'click [data-id], click .sidebar-item__link'() {
+		if(this.hubRoomInfo) {
+			Session.set('hubRoomInfo', this.hubRoomInfo);
+		}
 		return menu.close();
 	},
 	'click .sidebar-item__menu'(e) {

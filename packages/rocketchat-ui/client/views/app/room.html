@@ -11,23 +11,27 @@
 					<header class="fixed-title content-background-color border-component-color">
 						{{> burger}}
 						<h2>
-							{{#if showToggleFavorite}}
-								<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
-							{{/if}}
+							{{#if isHubActive}}
+								{{> hubRoomTitle}}
+							{{else}}
+								{{#if showToggleFavorite}}
+									<a href="#favorite" class="toggle-favorite"><i class="{{favorite}}" aria-label="{{_ favoriteLabel}}"></i></a>
+								{{/if}}
 
-							{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
+								{{> icon block="room-icon" icon=roomIcon classes=userStatus}}
 
-							<span class="room-title">{{roomName}}</span>
-							{{#if secondaryName}}
-								<span class="secondary-name">@{{secondaryName}}</span>
+								<span class="room-title">{{roomName}}</span>
+								{{#if secondaryName}}
+									<span class="secondary-name">@{{secondaryName}}</span>
+								{{/if}}
+								{{#if sentimentSmile}}
+									<span class="sentiment">{{sentimentSmile}}</span>
+								{{/if}}
+								{{#if isTranslated}}
+									<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
+								{{/if}}
+								<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 							{{/if}}
-							{{#if sentimentSmile}}
-								<span class="sentiment">{{sentimentSmile}}</span>
-							{{/if}}
-							{{#if isTranslated}}
-								<i class="icon-language" aria-label="{{_ "Translated"}}"></i>
-							{{/if}}
-							<span class="room-topic">{{{RocketChatMarkdown roomTopic}}}</span>
 						</h2>
 
 						{{#with toolbarButtons}}

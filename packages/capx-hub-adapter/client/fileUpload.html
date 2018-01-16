@@ -1,0 +1,117 @@
+<template name="fileUpload">
+  <div id="uploadModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="grid">
+        {{#each uploadList}}
+          {{> fileRow}}
+        {{/each}}
+      </div>
+      <button class="button upload-files"><span>Upload Files</span></button>
+      <button class="button add-file"><span>Add File</span></button>
+    </div>
+  </div>
+</template>
+
+<template name="fileRow">
+  <div class="row" id="{{_id}}">
+    <input type="text" id="file-name" placeholder="File Name" class="file-name"/>
+    <div class="fileinputs">
+      <input id="fileInput" type="file" class="file" />
+      <div class="fakefile">
+        <input placeholder="Select File"/>
+      </div>
+    </div>
+    <select id="parentDir" class="dropdown-list">
+        <option value="">Select Folder</option>
+      {{#each dirsList}}
+        <option value="{{_id}}">{{name}}</option>
+      {{/each}}
+    </select>
+    <button id="all-users" class="">All Users</button>
+    <div class="multiselect">
+      <div class="selectBox">
+        <select>
+          <option>Deal Room</option>
+        </select>
+        <div class="overSelect"></div>
+      </div>
+      <div id="checkboxes" data-type="dealRoomIds">
+        {{#each dealRoomsList}}
+          <label for="{{_id}}">
+            <input type="checkbox" id="{{_id}}" data-type="dealRoomIds"/>{{name}}</label>
+        {{/each}}
+      </div>
+    </div>
+    <div class="multiselect">
+      <div class="selectBox">
+        <select>
+          <option>CP Firms</option>
+        </select>
+        <div class="overSelect"></div>
+      </div>
+      <div id="checkboxes" data-type="teamIds">
+        {{#each teamsList}}
+          <label for="{{_id}}">
+            <input type="checkbox" id="{{_id}}" data-type="teamIds"/>{{displayName}}</label>
+        {{/each}}
+      </div>
+    </div>
+    <div class="multiselect">
+      <div class="selectBox">
+        <select>
+          <option>CP Users</option>
+        </select>
+        <div class="overSelect"></div>
+      </div>
+      <div id="checkboxes" data-type="userIds">
+        {{#each usersList}}
+          <label for="{{_id}}">
+            <input type="checkbox" id="{{_id}}" data-type="userIds"/>{{displayName}}</label>
+        {{/each}}
+      </div>
+    </div>
+    <icon id="{{_id}}" class="icon-minus-circled remove-row"></icon>
+  </div>
+</template>
+
+<template name="non">
+    <div class="row" id="{{_id}}">
+        <input type="text" id="file-name" placeholder="File Name" class="file-name"/>
+        <div class="fileinputs">
+          <input id="fileInput" type="file" class="file" />
+          <div class="fakefile">
+            <input placeholder="Select File"/>
+          </div>
+        </div>
+        <select id="parentDir" class="dropdown-list">
+            <option value="">Select Folder</option>
+          {{#each dirsList}}
+            <option value="{{_id}}">{{name}}</option>
+          {{/each}}
+        </select>
+        <button id="all-users" class="">All Users</button>
+        {{#if dealRoomsOpen}}
+        <select id="dealRoomAccess" class="dropdown-list">
+            <option value="">Deal Room</option>
+          {{#each dealRoomsList}}
+            <option value="{{_id}}">{{name}}</option>
+          {{/each}}
+        </select>
+        <select id="teamAccess" class="dropdown-list">
+            <option value="">CP Firms</option>
+          {{#each teamsList}}
+            <option value="{{_id}}">{{displayName}}</option>
+          {{/each}}
+        </select>
+        <select id="userAccess" class="dropdown-list">
+            <option value="">CP User</option>
+          {{#each usersList}}
+            <option value="{{_id}}">{{displayName}}</option>
+          {{/each}}
+        </select>
+        {{/if}}
+        <icon id="{{_id}}" class="icon-minus-circled remove-row"></icon>
+      </div>
+</template>

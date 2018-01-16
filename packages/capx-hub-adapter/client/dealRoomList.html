@@ -5,13 +5,20 @@
         <div class='sidebar-item__name'>
           {{dealSummary.type}}
         </div>
-        <div class="sidebar-item__menu">
+        <div class="sidebar-deal_room__menu">
           {{> icon block="sidebar-item__menu-icon" icon="menu"}}
         </div>
       </li>
       {{#each getChannels chatGroups}}
-        {{> chatRoomItem getRoom _id }}
-        
+        {{> chatRoomItem getRoom ../_id}}
+        {{#each getUsers}}
+          <li class="sidebar-item status-{{status}}">
+            <div class='sidebar-item__name username' data-parentchatid="{{../_id}}" style="text-align: right">
+              {{> icon block="sidebar-item__user-icon" icon="user"}}
+              {{this.name}}
+            </div>
+          </li>
+        {{/each}}
       {{/each}}
     {{/each}}
   </ul>
