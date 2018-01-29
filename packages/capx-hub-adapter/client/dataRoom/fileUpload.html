@@ -1,0 +1,15 @@
+<template name="fileUpload">
+  <div id="uploadModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content data-room-upload">
+      <span class="close">&times;</span>
+      <div class="grid">
+        {{#each uploadList}}
+          {{> fileRow}}
+        {{/each}}
+      </div>
+      <button class="button upload-files"><span>Upload Files</span></button>
+      <button class="button add-file"><span>Add File</span></button>
+    </div>
+  </div>
+</template>

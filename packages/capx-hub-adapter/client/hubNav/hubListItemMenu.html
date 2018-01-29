@@ -1,0 +1,10 @@
+<template name="hubListItemMenu">
+  {{#if canManageUsers}}
+    {{#if hasNotification}}
+    <span class="badge badge--notification">{{> icon block="sidebar-item__user-icon" icon="user"}}</span>
+    {{/if}}
+    <div class="sidebar-company__menu">
+      {{> icon block="sidebar-item__menu-icon" icon="menu"}}
+    </div>
+  {{/if}}
+</template>

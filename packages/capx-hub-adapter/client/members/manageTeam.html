@@ -1,0 +1,63 @@
+<template name="manageTeam">
+  <div id="manageTeamModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content manage-users">
+      <span class="close">&times;</span>
+      <div class="grid">
+        <div class="row">
+          <div class="cell user-name">User</div>
+          <div class="cell level-option">Role</div>
+          <div class="cell invite-button">Action</div>
+        </div>
+        {{#with teamUsersList}}
+          {{#each ownersList}}
+            <div class="row" id="{{userId}}">
+              <div class="cell user-name">{{displayName}}</div>
+              <div class="cell level-option">{{level}}</div>
+              <div class="cell invite-button">
+                <button id="{{userId}}" class="button remove"><span id="{{userId}}">Remove</span></button>
+              </div>
+            </div>
+          {{/each}}
+          {{#each leadsList}}
+            <div class="row" id="{{userId}}">
+              <div class="cell user-name">{{displayName}}</div>
+              <div class="cell level-option">{{level}}</div>
+              <div class="cell invite-button">
+                <button id="{{userId}}" class="button remove"><span id="{{userId}}">Remove</span></button>
+                {{#if $eq editorType 'SEEKER'}}
+                <button id="{{userId}}" class="button edit" data-value="Member"><span id="{{userId}}" data-value="Member">Make Member</span></button>
+                {{/if}}
+              </div>
+            </div> 
+          {{/each}}
+          {{#each membersList}}
+            <div class="row" id="{{userId}}">
+              <div class="cell user-name">{{displayName}}</div>
+              <div class="cell level-option">{{level}}</div>
+              <div class="cell invite-button">
+                <button id="{{userId}}" class="button remove"><span id="{{userId}}">Remove</span></button>
+                {{#if $eq editorType 'SEEKER'}}
+                  <button id="{{userId}}" class="button edit" data-value="Lead"><span id="{{userId}}" data-value="Lead">Make Lead</span></button>
+                {{/if}}
+              </div>
+            </div> 
+          {{/each}}
+        {{/with}}
+        {{#each pendingInvites}}
+        <div id="{{assignmentId}}" class="row">
+          <div class="cell user-name">{{displayName}}</div>
+          <div class="cell level-option">{{level}}</div>
+          {{#if $eq editorType 'SEEKER'}}
+            <div class="cell invite-button">
+              <button id="{{assignmentId}}" class="button approve"><span id="{{assignmentId}}">Approve</span></button>
+            </div>
+          {{else}}
+          <div class="cell invite-button">{{status}}</div>
+          {{/if}}
+        </div>
+      {{/each}}
+      </div>
+    </div>
+  </div>
+</template>

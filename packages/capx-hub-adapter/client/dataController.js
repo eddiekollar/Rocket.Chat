@@ -21,5 +21,7 @@ Tracker.autorun(function() {
         Session.set('HUBProfile', profile);
       });
     }
+    Meteor.subscribe('assignments', function() {
+    });
   }
 });

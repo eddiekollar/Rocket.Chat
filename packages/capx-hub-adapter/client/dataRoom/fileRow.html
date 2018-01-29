@@ -1,0 +1,63 @@
+<template name="fileRow">
+    <div class="row file-info" id="{{_id}}">
+      {{#if $neq type 'edit'}}
+      <input type="text" id="file-name" placeholder="File Name" class="file-name"/>
+      <div class="fileinputs">
+        <input id="fileInput" type="file" class="file" />
+        <div class="fakefile">
+          <input placeholder="Select File"/>
+        </div>
+      </div>
+      <select id="parentDir" class="dropdown-list">
+          <option value="">Select Folder</option>
+        {{#each dirsList}}
+          <option value="{{_id}}">{{name}}</option>
+        {{/each}}
+      </select>
+      {{/if}}
+      <button id="all-users" class="">All Users</button>
+      <div class="multiselect">
+        <div class="selectBox">
+          <select>
+            <option>Deal Room</option>
+          </select>
+          <div class="overSelect"></div>
+        </div>
+        <div id="checkboxes" data-type="dealRoomIds">
+          {{#each dealRoomsList}}
+            <label for="{{_id}}">
+              <input type="checkbox" id="{{_id}}" data-type="dealRoomIds"/>{{name}}</label>
+          {{/each}}
+        </div>
+      </div>
+      <div class="multiselect">
+        <div class="selectBox">
+          <select>
+            <option>CP Firms</option>
+          </select>
+          <div class="overSelect"></div>
+        </div>
+        <div id="checkboxes" data-type="teamIds">
+          {{#each teamsList}}
+            <label for="{{_id}}">
+              <input type="checkbox" id="{{_id}}" data-type="teamIds"/>{{displayName}}</label>
+          {{/each}}
+        </div>
+      </div>
+      <div class="multiselect">
+        <div class="selectBox">
+          <select>
+            <option>CP Users</option>
+          </select>
+          <div class="overSelect"></div>
+        </div>
+        <div id="checkboxes" data-type="userIds">
+          {{#each usersList}}
+            <label for="{{_id}}">
+              <input type="checkbox" id="{{_id}}" data-type="userIds"/>{{displayName}}</label>
+          {{/each}}
+        </div>
+      </div>
+      <icon id="{{_id}}" class="icon-minus-circled remove-row"></icon>
+    </div>
+  </template>

@@ -152,7 +152,7 @@ Files = new FilesCollection({
 
   // Intercept FilesCollection's remove method to remove file from AWS:S3
   const _origRemove = Files.remove;
-  Files.remove = function (search) {
+  Files.remove = function (search, cb) {
     const cursor = this.collection.find(search);
     cursor.forEach((fileRef) => {
       _.each(fileRef.versions, (vRef) => {
@@ -173,7 +173,7 @@ Files = new FilesCollection({
     });
 
     //remove original file from database
-    _origRemove.call(this, search);
+    _origRemove.call(this, search, cb);
   };
   // export {Files};
 } else {

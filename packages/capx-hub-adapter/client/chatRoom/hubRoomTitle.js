@@ -9,6 +9,7 @@ Template.hubRoomTitle.helpers({
   otherPartyName() {
     const chatGroup = Template.instance().chatGroup.get();
     const hubProfile = Template.instance().hubProfile.get();
+    const hubInfo = Session.get('hubInfo');
     const hubRoomInfo = Session.get('hubRoomInfo');
     let displayName = '';
 
@@ -19,7 +20,14 @@ Template.hubRoomTitle.helpers({
         const otherProfile = HUBProfiles.findOne({userId: otherUserId});
         displayName = ` ${otherProfile.displayName}`;
       } else if(chatGroup.type === 'DEAL_ROOM_CHAT') {
-        const otherTeamId = _.without(chatGroup.teamIds, hubRoomInfo.teamId)[0];
+        let otherTeamId = '';
+        
+        if(hubInfo.userType === 'SEEKER') {
+          otherTeamId = hubRoomInfo.cpTeamId;
+        } else {
+          otherTeamId = hubRoomInfo.csTeamId;
+        }
+
         const otherTeam = Team.findOne({_id: otherTeamId});
         displayName = ` ${otherTeam.displayName}`;
       }

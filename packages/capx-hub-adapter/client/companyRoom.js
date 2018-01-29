@@ -11,8 +11,11 @@ Template.companyRoom.onCreated(function() {
       const companyTeam = Team.findOne({type: 'COMPANY', companyId: profile.companyId});
       
       if(companyTeam) {
+        const companyChat = ChatGroup.findOne({teamIds: {$in: [companyTeam._id]}});
         self.companyTeam.set(companyTeam);
-        self.chatGroup.set(ChatGroup.findOne({teamIds: {$in: [companyTeam._id]}}));
+        self.chatGroup.set(companyChat);
+
+        FlowRouter.go(`/group/${companyChat.rocketGroup.name}`);
       }
     }
   });
@@ -24,14 +27,25 @@ Template.companyRoom.events({
     const parentGroup = template.chatGroup.get();
     const parentGroupId = parentGroup._id;
     const hubInfo = Session.get('hubInfo');
+    const companyTeam = Template.instance().companyTeam.get();
 
-    if(hubInfo) {
+    if(hubInfo && companyTeam) {
       const userIds = [hubInfo.userId, this._id];
       let chatSubGroup = ChatGroup.findOne({parentId: parentGroupId, userIds: { "$size" : userIds.length, "$all": userIds }});
+      let csTeamId = '';
+      let cpTeamId= '';
+
+      if(hubInfo.userType === 'SEEKER') {
+        csTeamId = companyTeam._id;
+      } else {
+        cpTeamId = companyTeam._id;
+      }
 
       const hubRoomInfo = {
         type: 'COMPANY',
-        dealRoomId: ''
+        dealRoomId: '',
+        csTeamId,
+        cpTeamId
       };
 
       if(chatSubGroup) {
@@ -68,14 +82,27 @@ Template.companyRoom.helpers({
   },
   getRoom() {
     const companyTeam = Template.instance().companyTeam.get();
-    if(!_.isEmpty(companyTeam)) {
+    const hubInfo = Session.get('hubInfo');
+
+    if(hubInfo && !_.isEmpty(companyTeam)) {
       const group = ChatGroup.findOne({teamIds: {$in: [companyTeam._id]}});
       const rid = group.rocketGroup._id;
       const sub = ChatSubscription.findOne({rid});
+      let csTeamId = '';
+      let cpTeamId= '';
+
+      if(hubInfo.userType === 'SEEKER') {
+        csTeamId = companyTeam._id;
+      } else {
+        cpTeamId = companyTeam._id;
+      }
+
       sub.label = 'Company Chat Room';
       sub.hubRoomInfo = {
         type: 'COMPANY',
-        dealRoomId: ''
+        dealRoomId: '',
+        csTeamId,
+        cpTeamId
       };
       return sub;
     } else {

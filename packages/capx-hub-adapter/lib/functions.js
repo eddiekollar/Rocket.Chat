@@ -15,3 +15,7 @@ HUBAdapter.formattedAmount = function(amount) {
 HUBAdapter.formatteShortHanddAmount = function(amount) {
   return numeral(amount).format('($ 0.00 a)');
 }
+
+HUBAdapter.getUserCompanyTeam = function(hubProfile) {
+  return Team.findOne({type: 'COMPANY', companyId: hubProfile.companyId});
+};

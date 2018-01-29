@@ -1,0 +1,23 @@
+<template name="hubFile">
+  {{#with file}}
+    {{#if hasPermission 'ViewDoc'}}
+      <li id="{{fileId}}">
+        {{#if hasPermission 'RemoveFile'}}
+        <i id="{{fileId}}" class="icon-trash file-delete"></i>
+        {{/if}}
+        {{#if hasPermission 'ChangePermission'}}
+        <i id="{{_id}}" class="icon-cog file-permission"></i>
+        {{/if}}
+        {{#if hasPermission 'DownloadDoc'}}
+        <a title="{{escapedName}}" href="{{url}}" target="_blank" class="file-download" download="">
+          <i class="icon-download file-download"></i>
+        </a>
+        {{/if}}
+        <div title="{{escapedName}}" class="room-file-item file-name">
+          <i class="{{getFileIcon type}}"></i>
+          <p>{{displayName}}</p>
+        </div>
+      </li>
+    {{/if}}
+  {{/with}}
+</template>

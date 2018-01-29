@@ -1,9 +1,11 @@
 <template name="dataRoomPermissions">
     <div id="permissionModal" class="modal">
       <!-- Modal content -->
-      <div class="modal-content">
+      <div class="modal-content data-room-permissions">
         <span class="close">&times;</span>
         <h3>Edit Permissions</h3>
+        {{> fileRow type='edit'}}
+        <br>
         <button id="all-users" class="">All Users</button>
         {{#if dealRoomsOpen}}
         <div class="multiselect">
@@ -52,7 +54,7 @@
         <br/>
         <button class="button save-permissions"><span>Save</span></button>
         <button class="button cancel-permissions"><span>Cancel</span></button>
-        <button class="button add-permissions"><span>Add Rule</span></button>
+        <button class="button delete-file"><span>Delete File</span></button>
       </div>
     </div>
   </template>

@@ -258,45 +258,12 @@ Template.popover.events({
 			});
 		}
 	},
-	'click [data-type="deal-room-edit"]'(event, instance) {
-		let wrapper = document.createElement('div');
-		wrapper.appendChild(document.createTextNode("Some text"));
-    return swal({
-			title: t('Edit Users'),
-			content: wrapper.firstChild,
-			showCancelButton: false,
-			confirmButtonText: t('Done'),
-			closeOnConfirm: false,
-		}, function(isConfirm) {
-			if (isConfirm) {
-				//do stuff
-			}
-			swal.close();
-		});
+	'click [data-type="deal-room-manage-team"]'(event, instance) {
+		Session.set('openManageTeam', true);
+		popover.close();
 	},
 	'click [data-type="deal-room-broadcast"]'(event, instance) {
-		//send message to all channels in deal room
-		return swal({
-			title: t('Message All Providers in Deal Room'),
-			text: 'Message',
-			type: 'input',
-			showCancelButton: true,
-			confirmButtonText: t('Send'),
-			closeOnConfirm: false,
-			html: false
-		}, function(isConfirm) {
-			if (isConfirm) {
-				//do stuff
-				swal({
-					title: 'Message Sent',
-					text: TAPi18n.__('Thank_you_exclamation_mark '),
-					type: 'success',
-					timer: 1000,
-					showConfirmButton: false
-				});
-			}else{
-				swal.close();
-			}
-		});
+		Session.set('openBroadcast', true);
+		popover.close();
 	}
 });

@@ -3,7 +3,6 @@ import { publishComposite } from 'meteor/reywood:publish-composite';
 import {check} from 'meteor/check';
 
 Meteor.publish('profile.get', function() {
-  console.log('getting profile...');
   return HUBProfiles.find({'rocketChat._id': this.userId});
 });
 
@@ -23,6 +22,11 @@ Meteor.publishComposite('hub.get', function(hubId) {
           return Team.find({type: 'COMPANY', companyId});
         },
         children: [
+          {
+            find(team) {
+              return Assignments.find({'assignedTeamId': team._id, completed: false});
+            }
+          },
           {
             find(team) {
               const userIds = _.union(team.ownerUserIds, team.leadUserIds, team.memberUserIds);
@@ -298,5 +302,41 @@ Meteor.publishComposite('dataRoom.getAll', function(hubId) {
   }
   else {
     throw Meteor.Error('Not authorized');
+  }
+});
+
+Meteor.publishComposite('assignments', function() { 
+  const profile = HUBProfiles.findOne({'rocketChat._id': this.userId});
+  const hubUser= HUBUsers.findOne({_id: profile.userId});
+  
+  const role = hubUser.roles[0];
+  
+  const teamCursor = Team.find({$or: [{ownerUserIds: {$in: [profile.userId]}}, {leadUserIds: {$in: [profile.userId]}}, {memberUserIds: {$in: [profile.userId]}}]});
+  const teamIds = teamCursor.map(function(team) { return team._id});
+  
+  if(role === 'SEEKER') {
+    return { 
+      find() {
+        return Assignments.find({assignedTeamId: {$in: teamIds}, completed: false}); 
+      },children: [
+        {
+          find(assignment) {
+            return HUBProfiles.find({userId: assignment.task.userId});
+          }
+        }
+      ]
+    }
+  } if(role === 'PROVIDER') { 
+    return {
+      find() {
+        return Assignments.find({'task.teamId': {$in: teamIds}, completed: false});
+      }
+    }
+  } else{
+    return {
+      find(){
+        this.read();
+      }
+    }
   }
 });

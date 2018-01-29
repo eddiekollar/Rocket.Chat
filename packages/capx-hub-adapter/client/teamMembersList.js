@@ -137,18 +137,6 @@ Template.teamMembersList.helpers({
 		return ret;
 	},
 
-	canAddUser() {
-		const roomData = Session.get(`roomData${ this._id }`);
-		if (!roomData) { return ''; }
-		return (() => {
-			switch (roomData.t) {
-				case 'p': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-p-room', 'add-user-to-joined-room'], this._id);
-				case 'c': return RocketChat.authz.hasAtLeastOnePermission(['add-user-to-any-c-room', 'add-user-to-joined-room'], this._id);
-				default: return false;
-			}
-		})();
-	},
-
 	autocompleteSettingsAddUser() {
 		return {
 			limit: 10,
@@ -202,7 +190,8 @@ Template.teamMembersList.helpers({
 		}
 
 		return this.user.name;
-	}});
+	}
+});
 
 Template.teamMembersList.events({
 	'click .see-all'(e, instance) {

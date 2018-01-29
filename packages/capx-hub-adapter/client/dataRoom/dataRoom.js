@@ -13,11 +13,11 @@ Template.dataRoom.onCreated(function() {
         self.subscribe('dataRoom.get', hubId, function() {
           const hub = HUB.findOne({_id: hubId});
           self.dataRoom.set(DataRoom.findOne({_id: hub.dataRoomId}));
-          self.permissions.set(['ViewDoc','AddFolder','AddDoc','ChangePermission','RemoveFile','DownloadDoc']);
+          self.permissions.set(['ViewDoc','AddFolder','AddDoc','ChangePermission','RemoveFile','DownloadDoc', 'RemoveFolder']);
         });
       } else if(hubInfo.userType === 'PROVIDER' && !_.isEmpty(hubRoomInfo)) {
-        const {dealRoomId,teamId} = hubRoomInfo;
-        self.subscribe('dataRoom.byDealRoom.cp', dealRoomId, teamId, function(){
+        const {dealRoomId, cpTeamId} = hubRoomInfo;
+        self.subscribe('dataRoom.byDealRoom.cp', dealRoomId, cpTeamId, function(){
           const dealRoom = DealRoom.findOne({_id: dealRoomId});
           const hub = HUB.findOne({_id: dealRoom.hubId});
           self.dataRoom.set(DataRoom.findOne({_id: hub.dataRoomId}));
@@ -67,7 +67,48 @@ function createDropDown(dataRoom) {
 
   dropDown +=  '</select>';
   return dropDown;
-} 
+};
+
+function deleteDir(dataRoomId, dirId) {
+  return swal({
+    title: t('Are_you_sure'),
+    text: t('This folder and it\'s contents will be deleted'),
+    type: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#DD6B55',
+    confirmButtonText: t('Yes Delete'),
+    cancelButtonText: t('Cancel'),
+    closeOnConfirm: false,
+    html: false
+  }, function() {
+    return Meteor.call('dir.delete', dataRoomId, dirId, function(err, result) {
+      if (err) {
+        return handleError(err);
+      }
+      if(result) {
+        $(`li#${dirId}`).remove();
+        swal({
+          title: t('Removed'),
+          text: t('Folder Has Been Delete'),
+          type: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });  
+      } else {
+        swal({
+          title: t('Error Deleting Folder'),
+          type: 'error',
+          timer: 1000
+        });
+      }
+      return true;
+    });
+  });
+}
+
+function folderNameExists(name, parentDirId, dirs) {
+  return _.where(dirs, {parentDirId, name}).length > 0;
+}
 
 Template.dataRoom.events({
   'click .add-dir': function(event, template) {
@@ -88,13 +129,22 @@ Template.dataRoom.events({
         return false;
       }
 
+      inputValue = inputValue.trim();
+
       if (inputValue === '') {
         swal.showInputError(TAPi18n.__('Please name the folder'));
         return false;
       }
 
       const parentDirId = $('#dir option:selected').val();
-      Meteor.call('createDir', inputValue, parentDirId, dataRoom._id, function(error, result) {
+      const exists = folderNameExists(inputValue, parentDirId, dataRoom.childDirs);
+
+      if(exists) {
+        swal.showInputError(TAPi18n.__(`A folder named ${inputValue} already exists`));
+        return false;
+      }
+
+      Meteor.call('dir.create', inputValue, parentDirId, dataRoom._id, function(error, result) {
         if (error) {
           console.error(error);
           return false;
@@ -117,6 +167,11 @@ Template.dataRoom.events({
   'click .dir-permission'(event, template){
     Session.set('editPermissions', {dirId: event.target.id});
     $('#permissionModal').show();
+  },
+  'click .folder-delete'(event, template) {
+    const dirId = event.target.id;
+    const dataRoom = template.dataRoom.get();
+    deleteDir(dataRoom._id, dirId);
   }
 })
 
@@ -149,44 +204,6 @@ Template.dirs.helpers({
 Template.dirs.events({
   'click .dir-permission'(event, template) {
     Session.set('editPermissions', {dirId: event.target.id});
-    $('#permissionModal').show();
-  }
-});
-
-Template.hubFile.onCreated(function() {
-  console.log(this);
-});
-
-Template.hubFile.helpers({
-  file() {
-    return Template.instance().data.file;
-  },
-  hasPermission(capability) {
-    const permissions = Template.instance().data.permissions.get();
-    permissions.indexOf(capability);
-    return true;
-  },
-  getFileIcon(type) {
-		if (type.match(/^image\/.+$/)) {
-			return 'icon-picture';
-		}
-
-		return 'icon-docs';
-	},
-	escapedName() {
-    const file = Template.instance().data.file;
-		return _.escape(file.displayName);
-  },
-  url() {
-    const fileId = Template.instance().data.file.fileId;
-    const file = Files.findOne({_id: fileId});
-    return file.link();
-  }
-});
-
-Template.hubFile.events({
-  'click .file-permission'(event, template) {
-    Session.set('editPermissions', {fileId: event.target.id});
     $('#permissionModal').show();
   }
 });

@@ -18,14 +18,6 @@
         </div>
         {{/with}}
         <nav>
-          {{#unless isSelf user.username}}
-            {{#if showAll}}
-              {{#if canRemoveUser}}
-                <button class="button button-block danger remove-user-deal-room"><span>Remove from Deal Room</span></button>
-              {{/if}}
-            {{/if}}
-          {{/unless}}
-  
           {{#if showAll}}
             <button class='button back'><span>{{_ "View_All"}} <i class='icon-angle-right'></i></span></button>
           {{/if}}
