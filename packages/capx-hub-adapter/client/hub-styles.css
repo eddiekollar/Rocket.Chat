@@ -1,3 +1,10 @@
+.side-nav-dropdown {
+  width: 90%;
+  margin-left: 0px;
+  border: none;
+  color: #9ea2a8;
+}
+
 .memberlist-item {
   display: flex;
 }
@@ -126,7 +133,7 @@
   width: 150px;
 };
 
-#all-users {
+.file-users {
   border: 0.5px solid;
   border-radius: 5px;
   padding: 10px;

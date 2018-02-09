@@ -15,7 +15,9 @@
               <div class="cell user-name">{{displayName}}</div>
               <div class="cell level-option">{{level}}</div>
               <div class="cell invite-button">
+                {{#if $eq editorType 'SEEKER'}}
                 <button id="{{userId}}" class="button remove"><span id="{{userId}}">Remove</span></button>
+                {{/if}}
               </div>
             </div>
           {{/each}}

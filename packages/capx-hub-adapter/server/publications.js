@@ -173,11 +173,11 @@ function hasObjAccess(objAccess, userId, teamId, dealRoomId) {
   if(objAccess) {
     const {allUsers, dealRoomIds, teamIds, userIds} = objAccess;
 
-    const isDealRoomPermitted = dealRoomIds.indexOf(dealRoomId) > -1;
+    const dealRoomPermitted = dealRoomIds.indexOf(dealRoomId) > -1;
     const teamPermitted = teamIds.indexOf(teamId) > -1;
-    const isUserLevelPermitted = userIds.indexOf(userId) >-1;
+    const userLevelPermitted = userIds.indexOf(userId) > -1;
 
-    hasAccess = (allUsers || isDealRoomPermitted && teamPermitted || isUserLevelPermitted);
+    hasAccess = (allUsers || dealRoomPermitted && teamPermitted && userLevelPermitted);
   }
 
   return hasAccess;
@@ -208,7 +208,7 @@ function getAllDirIds({userId, teamId, dealRoomId, rootDirId, currentDirId, dirs
     const childDirIds = _.map(dirIds, function(id){
       return getAllDirIds({userId, teamId, dealRoomId, rootDirId, currentDirId: id, dirs});
     });
-    return _.unique(_.union(dirIds, childDirIds));
+    return _.unique(_.union(dirIds, _.flatten(childDirIds)));
   }else{
     return [];
   }
@@ -242,16 +242,18 @@ Meteor.publishComposite('dataRoom.byDealRoom.cp', function(dealRoomId, teamId) {
             {
               find(dataRoom) {
                 const data = {
-                  userId: this.userId,
+                  userId,
                   teamId,
                   dealRoomId: dealRoom._id,
                   rootDirId: dataRoom._id,
                   currentDirId: dataRoom._id,
                   dirs: dataRoom.childDirs
                 };
-                const dirIds = getAllDirIds(data);
+                let dirIds = getAllDirIds(data);
+                dirIds.push(dataRoom._id);
+
                 let accessibleFileIds = DataRoomFiles.find({dataRoomId: dataRoom._id, parentDirId: {$in: dirIds}}).map(function(file) {
-                  const hasAccess = hasObjAccess(file.access, this.userId, teamId, dealRoom._id);
+                  const hasAccess = hasObjAccess(file.access, userId, teamId, dealRoom._id);
                   if(hasAccess) {
                     return file._id;
                   } else {

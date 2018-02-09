@@ -19,6 +19,7 @@ Package.onUse(function(api) {
 	api.use('http');
 	api.use('tracker');
 	api.use('check');
+	api.use('session');
 
 	api.imply('facebook-oauth');
 	api.imply('twitter-oauth');

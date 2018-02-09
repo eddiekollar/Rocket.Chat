@@ -1,13 +1,8 @@
 Template.hubNav.helpers({
-  isInCsCompany() {
-		const profile = Template.instance().profile.get();
-		let isInCsCompany = false;
-
-		if(!_.isEmpty(profile)) {
-			isInCsCompany = profile.companyId.indexOf('CS') > -1;
-		}
+  isSeeker() {
+		const hubInfo = Session.get('hubInfo');
 		
-		return isInCsCompany;
+		return (hubInfo && hubInfo.userType === 'SEEKER');
 	},
 
 	hubAmount() {

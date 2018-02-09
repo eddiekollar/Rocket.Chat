@@ -260,7 +260,7 @@ Template.teamMembersList.onCreated(function() {
         const profile = HUBProfiles.findOne({userId: hubInfo.userId});
         
         const chatGroup = ChatGroup.findOne({'rocketGroup._id': this.data.rid});
-        this.userTeam.set(Team.findOne({_id: {$in: chatGroup.teamIds}, $or: [{ownerUserIds: {$in: [profile.userId]}}, {leaderUserIds: {$in: [profile.userId]}}, {memberUserIds: {$in: [profile.userId]}}]}));
+        this.userTeam.set(Team.findOne({_id: {$in: chatGroup.teamIds}, $or: [{ownerUserIds: {$in: [profile.userId]}}, {leadUserIds: {$in: [profile.userId]}}, {memberUserIds: {$in: [profile.userId]}}]}));
         const otherIds = _.difference(chatGroup.teamIds, [this.userTeam.get()._id]);
         this.otherTeam.set(Team.findOne({_id: {$in: otherIds}}));
         this.hubDataLoaded.set(true);

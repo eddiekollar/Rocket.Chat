@@ -5,56 +5,9 @@
         <span class="close">&times;</span>
         <h3>Edit Permissions</h3>
         {{> fileRow type='edit'}}
-        <br>
-        <button id="all-users" class="">All Users</button>
-        {{#if dealRoomsOpen}}
-        <div class="multiselect">
-          <div class="selectBox">
-            <select>
-              <option>Deal Room</option>
-            </select>
-            <div class="overSelect"></div>
-          </div>
-          <div id="checkboxes" data-type="dealRoomIds">
-            {{#each dealRoomsList}}
-              <label for="{{_id}}">
-                <input type="checkbox" id="{{_id}}" data-type="dealRoomIds"/>{{name}}</label>
-            {{/each}}
-          </div>
-        </div>
-        <div class="multiselect">
-          <div class="selectBox">
-            <select>
-              <option>CP Firms</option>
-            </select>
-            <div class="overSelect"></div>
-          </div>
-          <div id="checkboxes" data-type="teamIds">
-            {{#each teamsList}}
-              <label for="{{_id}}">
-                <input type="checkbox" id="{{_id}}" data-type="teamIds"/>{{displayName}}</label>
-            {{/each}}
-          </div>
-        </div>
-        <div class="multiselect">
-          <div class="selectBox">
-            <select>
-              <option>CP Users</option>
-            </select>
-            <div class="overSelect"></div>
-          </div>
-          <div id="checkboxes" data-type="userIds">
-            {{#each usersList}}
-              <label for="{{_id}}">
-                <input type="checkbox" id="{{_id}}" data-type="userIds"/>{{displayName}}</label>
-            {{/each}}
-          </div>
-        </div>
-        {{/if}}
         <br/>
         <button class="button save-permissions"><span>Save</span></button>
         <button class="button cancel-permissions"><span>Cancel</span></button>
-        <button class="button delete-file"><span>Delete File</span></button>
       </div>
     </div>
   </template>

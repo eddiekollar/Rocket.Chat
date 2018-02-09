@@ -12,7 +12,9 @@ Template.dataRoom.onCreated(function() {
         const hubId = hubInfo.hubId;
         self.subscribe('dataRoom.get', hubId, function() {
           const hub = HUB.findOne({_id: hubId});
-          self.dataRoom.set(DataRoom.findOne({_id: hub.dataRoomId}));
+          const dataRoom = DataRoom.findOne({_id: hub.dataRoomId});
+          self.dataRoom.set(dataRoom);
+          Session.set('dataRoom', dataRoom);
           self.permissions.set(['ViewDoc','AddFolder','AddDoc','ChangePermission','RemoveFile','DownloadDoc', 'RemoveFolder']);
         });
       } else if(hubInfo.userType === 'PROVIDER' && !_.isEmpty(hubRoomInfo)) {
@@ -20,7 +22,9 @@ Template.dataRoom.onCreated(function() {
         self.subscribe('dataRoom.byDealRoom.cp', dealRoomId, cpTeamId, function(){
           const dealRoom = DealRoom.findOne({_id: dealRoomId});
           const hub = HUB.findOne({_id: dealRoom.hubId});
-          self.dataRoom.set(DataRoom.findOne({_id: hub.dataRoomId}));
+          const dataRoom = DataRoom.findOne({_id: hub.dataRoomId});
+          self.dataRoom.set(dataRoom);
+          Session.set('dataRoom', dataRoom);
 
           self.permissions.set(['ViewDoc']);
         });
@@ -86,7 +90,6 @@ function deleteDir(dataRoomId, dirId) {
         return handleError(err);
       }
       if(result) {
-        $(`li#${dirId}`).remove();
         swal({
           title: t('Removed'),
           text: t('Folder Has Been Delete'),
@@ -112,7 +115,7 @@ function folderNameExists(name, parentDirId, dirs) {
 
 Template.dataRoom.events({
   'click .add-dir': function(event, template) {
-    const dataRoom = template.dataRoom.get();
+    let dataRoom = template.dataRoom.get();
     const text = createDropDown(dataRoom);
     return swal({
       title: t('Create new folder'),
@@ -150,6 +153,10 @@ Template.dataRoom.events({
           return false;
         }
 
+        dataRoom.childDirs.push(result);
+        console.log(dataRoom);
+        template.dataRoom.set(dataRoom);
+        
         swal({
           title: 'Folder Created',
           text: TAPi18n.__('Thank_you_exclamation_mark '),
@@ -165,7 +172,7 @@ Template.dataRoom.events({
     $('#uploadModal').show();
   },
   'click .dir-permission'(event, template){
-    Session.set('editPermissions', {dirId: event.target.id});
+    Session.set('editPermissions', {objectType: 'dir', id: event.target.id});
     $('#permissionModal').show();
   },
   'click .folder-delete'(event, template) {
@@ -203,7 +210,7 @@ Template.dirs.helpers({
 
 Template.dirs.events({
   'click .dir-permission'(event, template) {
-    Session.set('editPermissions', {dirId: event.target.id});
+    Session.set('editPermissions', {objectType: 'dir', id: event.target.id});
     $('#permissionModal').show();
   }
 });

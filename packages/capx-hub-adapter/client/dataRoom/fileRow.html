@@ -1,5 +1,5 @@
 <template name="fileRow">
-    <div class="row file-info" id="{{_id}}">
+    <div class="row file-info" id="{{getId}}">
       {{#if $neq type 'edit'}}
       <input type="text" id="file-name" placeholder="File Name" class="file-name"/>
       <div class="fileinputs">
@@ -15,7 +15,7 @@
         {{/each}}
       </select>
       {{/if}}
-      <button id="all-users" class="">All Users</button>
+      <button id="{{getId}}" data-type="allusers" class="file-users">All Users</button>
       <div class="multiselect">
         <div class="selectBox">
           <select>
@@ -26,7 +26,7 @@
         <div id="checkboxes" data-type="dealRoomIds">
           {{#each dealRoomsList}}
             <label for="{{_id}}">
-              <input type="checkbox" id="{{_id}}" data-type="dealRoomIds"/>{{name}}</label>
+              <input type="checkbox" id="{{_id}}" data-type="dealRoomIds"  checked="{{checked}}"/>{{name}}</label>
           {{/each}}
         </div>
       </div>
@@ -40,7 +40,7 @@
         <div id="checkboxes" data-type="teamIds">
           {{#each teamsList}}
             <label for="{{_id}}">
-              <input type="checkbox" id="{{_id}}" data-type="teamIds"/>{{displayName}}</label>
+              <input type="checkbox" id="{{_id}}" data-type="teamIds" checked="{{checked}}"/>{{displayName}}</label>
           {{/each}}
         </div>
       </div>
@@ -53,11 +53,13 @@
         </div>
         <div id="checkboxes" data-type="userIds">
           {{#each usersList}}
-            <label for="{{_id}}">
-              <input type="checkbox" id="{{_id}}" data-type="userIds"/>{{displayName}}</label>
+            <label for="{{userId}}">
+              <input type="checkbox" id="{{userId}}" data-type="userIds"  checked="{{checked}}"/>{{displayName}}</label>
           {{/each}}
         </div>
       </div>
-      <icon id="{{_id}}" class="icon-minus-circled remove-row"></icon>
+      {{#if $neq type 'edit'}}
+        <icon id="{{getId}}" class="icon-minus-circled remove-row"></icon>
+      {{/if}}
     </div>
   </template>

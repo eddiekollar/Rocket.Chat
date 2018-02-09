@@ -18,17 +18,15 @@ Meteor.startup(function() {
 				order: 2
 			});
 			
-			RocketChat.TabBar.addButton({
-				groups: ['channel', 'group', 'direct'],
-				id: 'uploaded-files-list',
-				i18nTitle: 'Data_Room',
-				icon: 'clip',
-				template: 'dataRoom',
-				order: 3
-			});
-
-			if(hubInfo.userType === 'PROVIDER' && hubRoomInfo.type === 'COMPANY') {
-				RocketChat.TabBar.removeButton('uploaded-files-list');
+			if(!(hubInfo.userType === 'PROVIDER' && hubRoomInfo.type === 'COMPANY')) {
+				RocketChat.TabBar.addButton({
+					groups: ['channel', 'group', 'direct'],
+					id: 'uploaded-files-list',
+					i18nTitle: 'Data_Room',
+					icon: 'clip',
+					template: 'dataRoom',
+					order: 3
+				});
 			}
 
 		}

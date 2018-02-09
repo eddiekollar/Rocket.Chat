@@ -265,5 +265,9 @@ Template.popover.events({
 	'click [data-type="deal-room-broadcast"]'(event, instance) {
 		Session.set('openBroadcast', true);
 		popover.close();
+	},
+	'click [data-type="deal-room-remove-cpteam"]'(event, instance) {
+		Session.set('openRemoveCpTeam', true);
+		popover.close();
 	}
 });

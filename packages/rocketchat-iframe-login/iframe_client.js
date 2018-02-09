@@ -4,7 +4,37 @@ const _unstoreLoginToken = Accounts._unstoreLoginToken;
 Accounts._unstoreLoginToken = function() {
 	RocketChat.iframeLogin.tryLogin();
 	_unstoreLoginToken.apply(Accounts, arguments);
+	// if(args[0].callback) {
+	// 	args[0].callback();
+	// }
 };
+
+function doLogin(token) {
+	RocketChat.iframeLogin.loginWithToken(token, (error, result) => {
+		if (error) {
+			console.error({iFramTokenLoginError: error});
+		} else {
+			console.log({result});
+		}
+		FlowRouter.go('home'); 
+	});
+}
+
+FlowRouter.route('/iframe-login-token/:token', {
+	name: 'iFramTokenLogin',
+	action() {
+		const token = this.getParam('token');
+		if(Accounts._storedLoginToken()) {
+		// Meteor.logout(function() {
+			Accounts._unstoreLoginToken({callback: function() {
+				console.log('callback');
+				doLogin(token);
+			}});
+		} else{
+			doLogin(token);
+		}
+	}
+});
 
 class IframeLogin {
 	constructor() {
@@ -80,6 +110,16 @@ class IframeLogin {
 				callback(error, result);
 			}
 		});
+	// 	const hubInfo = Session.get('hubInfo');
+	// 	const token = (hubInfo && hubInfo.token) ? hubInfo.token : '';
+	// 	this.loginWithToken(token, (error, result) => {
+	// 		if (error) {
+	// 			this.reactiveIframeUrl.set(iframeUrl);
+	// 		} else {
+	// 			this.reactiveIframeUrl.set();
+	// 		}
+	// 		callback(error, result);
+	// 	});
 	}
 
 	loginWithToken(tokenData, callback) {
@@ -95,17 +135,17 @@ class IframeLogin {
 
 		console.log('loginWithToken');
 
-		if (tokenData.loginToken) {
+		if(tokenData.token) {
+			return Accounts.callLoginMethod({
+				methodArguments: [{
+					iframe: true,
+					token: tokenData.token
+				}],
+				userCallback: callback
+			});
+		} else if (tokenData.loginToken) {
 			return Meteor.loginWithToken(tokenData.loginToken, callback);
 		}
-
-		Accounts.callLoginMethod({
-			methodArguments: [{
-				iframe: true,
-				token: tokenData.token
-			}],
-			userCallback: callback
-		});
 	}
 }
 

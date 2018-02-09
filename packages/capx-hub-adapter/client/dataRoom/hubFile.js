@@ -30,7 +30,7 @@ Template.hubFile.helpers({
 
 Template.hubFile.events({
   'click .file-permission'(event, template) {
-    Session.set('editPermissions', {fileId: event.target.id});
+    Session.set('editPermissions', {objectType: 'file', id: event.target.id});
     $('#permissionModal').show();
   },
   'click .icon-trash.file-delete'(event, template) {

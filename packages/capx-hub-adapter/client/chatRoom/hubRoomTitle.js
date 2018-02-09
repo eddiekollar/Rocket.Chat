@@ -16,7 +16,6 @@ Template.hubRoomTitle.helpers({
     if(hubRoomInfo && hubProfile && chatGroup && chatGroup.type) {
       if(chatGroup.type === 'DIRECT_MESSAGES') {
         const otherUserId = _.without(chatGroup.userIds, hubProfile.userId)[0];
-        console.log(chatGroup.userIds, hubProfile.userId, otherUserId)
         const otherProfile = HUBProfiles.findOne({userId: otherUserId});
         displayName = ` ${otherProfile.displayName}`;
       } else if(chatGroup.type === 'DEAL_ROOM_CHAT') {

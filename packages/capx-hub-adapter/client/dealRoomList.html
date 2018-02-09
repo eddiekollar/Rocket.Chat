@@ -1,26 +1,54 @@
 <template name="dealRoomList">
   <ul class="rooms-list__list">
-    {{#each dealRooms}}
+    {{#if userType 'PROVIDER'}}
       <li class="sidebar-item">
-        <div class='sidebar-item__name'>
-          {{dealSummary.type}}
-        </div>
-        <div id="{{_id}}" class="sidebar-deal_room__menu">
+        <select id="dealRoom" class='side-nav-dropdown sidebar-item__name'>
+          {{#each dealRooms}}
+            <option value="{{_id}}">
+            {{displayName}}
+            </option>
+          {{/each}}
+        </select>
+        <div id="{{currentDealRoomId}}" class="sidebar-deal_room__menu">
           {{> icon block="sidebar-item__menu-icon" icon="menu"}}
         </div>
       </li>
-      {{#each getChannels chatGroups}}
-        {{> chatRoomItem (getRoom ../_id)}}
-        {{#each getUsers}}
-          <li class="sidebar-item status-{{status}}">
-            <div class='sidebar-item__name username' data-parentchatid="{{../_id}}" style="text-align: right">
-              {{> icon block="sidebar-item__user-icon" icon="user"}}
-              {{this.name}}
-            </div>
-          </li>
+      {{#with currentDealRoom}}
+        {{#each getChannels chatGroups}}
+          {{> chatRoomItem (getRoom ../_id)}}
+          {{#each getUsers}}
+            <li class="sidebar-item status-{{status}}">
+              <div class='sidebar-item__name username' data-parentchatid="{{../_id}}" style="text-align: right">
+                {{> icon block="sidebar-item__user-icon" icon="user"}}
+                {{this.name}}
+              </div>
+            </li>
+          {{/each}}
+        {{/each}}
+      {{/with}}
+    {{else}}
+      {{#each dealRooms}}
+        <li class="sidebar-item">
+          <div class='sidebar-item__name'>
+            {{displayName}}
+          </div>
+          <div id="{{_id}}" class="sidebar-deal_room__menu">
+            {{> icon block="sidebar-item__menu-icon" icon="menu"}}
+          </div>
+        </li>
+        {{#each getChannels chatGroups}}
+          {{> chatRoomItem (getRoom ../_id)}}
+          {{#each getUsers}}
+            <li class="sidebar-item status-{{status}}">
+              <div class='sidebar-item__name username' data-parentchatid="{{../_id}}" style="text-align: right">
+                {{> icon block="sidebar-item__user-icon" icon="user"}}
+                {{this.name}}
+              </div>
+            </li>
+          {{/each}}
         {{/each}}
       {{/each}}
-    {{/each}}
+    {{/if}}
   </ul>
   {{> manageTeam}}
 </template>

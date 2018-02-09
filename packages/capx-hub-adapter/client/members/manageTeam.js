@@ -102,7 +102,7 @@ Template.manageTeam.helpers({
     const dealTeam = Template.instance().dealTeam.get();
   
     if(dealTeam){
-      const pendingUsers = Assignments.find({'task.teamId': dealTeam._id}).map(function(assignment){
+      const pendingUsers = Assignments.find({'task.teamId': dealTeam._id, completed: false}).map(function(assignment){
         const {userId, teamId, level, status} = assignment.task;
         const profile = HUBProfiles.findOne({userId});
         return {
@@ -125,10 +125,12 @@ Template.manageTeam.helpers({
     const hubContext = Session.get('hubContext');
     let team = {};
 
-    if (hubContext.type === 'COMPANY') {
-      team = Template.instance().companyTeam.get();
-    } else {
-      team = Template.instance().dealTeam.get();
+    if(hubContext) {
+      if (hubContext.type === 'COMPANY') {
+        team = Template.instance().companyTeam.get();
+      } else {
+        team = Template.instance().dealTeam.get();
+      }
     }
     
     if(!_.isEmpty(team)) {

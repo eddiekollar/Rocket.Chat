@@ -71,7 +71,7 @@ Meteor.methods({
 
     return callPOST(`user/${profile.userId}/action`,{name: 'invite-user', inviterId: profile.userId, userId, level, teamId})
       .then(function(result){
-        console.log(result);
+        return result.success;
       }).catch(function(error){
         console.error(error);
       });
@@ -84,7 +84,7 @@ Meteor.methods({
 
     return callPOST(`user/${profile.userId}/action`,{name: 'approve-user', userId: user._id, assignmentId})
       .then(function(result){
-        console.log(result);
+        return result.success;
       }).catch(function(error){
         console.error(error);
       });
@@ -98,12 +98,13 @@ Meteor.methods({
 
     return callPOST(`user/${profile.userId}/action`,{name: 'remove-user', requesterId: profile.userId, userId, teamId})
       .then(function(result){
-
+        console.log(result);
+        return result.success;
       }).catch(function(error){
         console.error(error);
       });
   },
-  'removeCPFromDeal'(teamId, dealRoomId) {
+  'removeCpTeamFromDeal'(teamId, dealRoomId) {
     check(teamId, String);
     check(dealRoomId, String);
 
@@ -112,9 +113,10 @@ Meteor.methods({
 
     return callPOST(`user/${profile.userId}/action`,{name: 'remove-cpteam-deal', requesterId: profile.userId, teamId, dealRoomId})
       .then(function(result){
-
+        return result.success;
       }).catch(function(error){
         console.error(error);
+        return error;
       });
   },
   'changeUserLevel'(targetUserId, level, teamId){
@@ -127,7 +129,7 @@ Meteor.methods({
 
     return callPOST(`user/${profile.userId}/action`,{name: 'change-user-level', requesterId: profile.userId, userId, level, teamId})
       .then(function(result){
-
+        return result.success;
       }).catch(function(error){
         console.error(`Error calling POST user/${profile.userId}/action: `, error);
         throw Meteor.Error(error);
@@ -148,6 +150,10 @@ Meteor.methods({
     check(parentDirId, String);
     check(dataRoomId, String);
 
+    const user = Meteor.user();
+    const profile = HUBProfiles.findOne({'rocketChat._id': user._id});
+    const date = new Date();
+
     const slug = S(name).slugify().s;
     const _id = Random.id();
     const access = {
@@ -157,9 +163,11 @@ Meteor.methods({
       userIds: []
     };
   
-    return DataRoom.update({_id: dataRoomId}, {$push: {childDirs: {_id, name, parentDirId, slug, access}}}, function (error, num) {
+    DataRoom.update({_id: dataRoomId}, {$push: {childDirs: {_id, name, parentDirId, slug, access}, updatedBy: profile.userId, updatedAt: date}}, function (error, num) {
       console.log(error, num);
     });
+
+    return {_id, name, parentDirId, slug, access};
   },
   'dir.delete'(dataRoomId, dirId){
     check(dataRoomId, String);
@@ -184,6 +192,17 @@ Meteor.methods({
     DataRoom.update({_id: dataRoomId},{$set: {childDirs: dirs}});
     return true;
   },
+  'dir.permissionsUpdate'(dataRoomId, dirId, access) {
+    check(dataRoomId, String);
+    check(dirId, String);
+    check(access, Object);
+
+    const user = Meteor.user();
+    const profile = HUBProfiles.findOne({'rocketChat._id': user._id});
+    const date = new Date();
+
+    DataRoom.update({'childDirs': {$elemMatch: {_id: dirId}}},{$set: {'childDirs.$.access': access, updatedBy: profile.userId, updatedAt: date}});
+  },
   'file.add'(newFile) {
     check(newFile, Object);
     const newFileId = DataRoomFiles.insert(newFile);
@@ -200,5 +219,56 @@ Meteor.methods({
       DataRoomFiles.remove({fileId});
       return true;
     })
+  },
+  'file.permissionsUpdate'(_id, access) {
+    check(_id, String);
+    check(access, Object);
+
+    const user = Meteor.user();
+    const profile = HUBProfiles.findOne({'rocketChat._id': user._id});
+
+    const date = new Date();
+
+    return DataRoomFiles.update({_id}, {$set: {access, updatedBy: profile.userId, updatedAt: date}});
+  },
+  'permissions.check'(actions, teamId) {
+    check(actions, [String]);
+    check(teamId, String);
+
+    let permissions = [];
+    const user = Meteor.user();
+    const profile = HUBProfiles.findOne({'rocketChat._id': user._id});
+    const userId  = profile.userId;
+
+    const team = Team.findOne({_id: teamId});
+
+    if(team && profile) {
+      const hubUser = HUBUsers.findOne({_id: userId});
+      const role = hubUser.roles[0];
+
+      permissions = _.map(actions, function(action){
+        let permitted = false;
+        if(action === 'ManageCsTeam') {
+          if(role === 'SEEKER' && (team.ownerUserIds.indexOf(userId) > -1 || team.leadUserIds.indexOf(userId) > -1)) {
+            permitted = true;
+          }
+        } else if (action === 'ManageCpTeam') {
+          if(role === 'SEEKER' && (team.ownerUserIds.indexOf(userId) > -1 || team.leadUserIds.indexOf(userId) > -1)) {
+            permitted = true;
+          } else if (role === 'PROVIDER' && (team.ownerUserIds.indexOf(userId) > -1 || team.leadUserIds.indexOf(userId) > -1)) {
+            permitted = true;
+          }
+        } else if (action === 'RemoveCpTeam') {
+          if(role === 'SEEKER' && (team.ownerUserIds.indexOf(userId) > -1 || team.leadUserIds.indexOf(userId) > -1)) {
+            permitted = true;
+          }
+        }
+
+        return {action, permitted};
+      });
+      
+    }
+
+    return permissions;
   }
 });

@@ -1,10 +1,12 @@
 <template name="hubNav">
+  {{#if currentUser}}
   {{> companyRoom}}
-  {{#if isInCsCompany}}
+  {{#if isSeeker}}
     <h3 class="rooms-list__type">{{hubAmount}}</h3>
     <h3 class="rooms-list__type">{{hubType}}</h3>	
   {{/if}}
   <div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
     {{> dealRoomList}}
   </div>
+  {{/if}}
 </template>

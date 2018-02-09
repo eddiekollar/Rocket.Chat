@@ -1,18 +1,72 @@
+function broadcastMessage({dealRoomId}) {
+  return swal({
+    title: t('Send Message To All Providers'),
+    type: 'input',
+    showCancelButton: true,
+    closeOnConfirm: false,
+    closeOnCancel: true,
+    confirmButtonText: t('Send'),
+    cancelButtonText: t('Cancel'),
+    html: true
+  }, function(inputValue) {
+    if (inputValue === false) {
+      return false;
+    }
+
+    inputValue = inputValue.trim();
+    
+    if (inputValue === '') {
+      swal.showInputError(TAPi18n.__('Please write a message'));
+      return false;
+    }
+    
+    const chatMessages = new ChatMessages();
+    chatMessages.init(this);
+    const dealRoom = DealRoom.findOne({_id: dealRoomId});
+
+    ChatGroup.find({_id: {$in: dealRoom.chatGroups}}).forEach(function(chatGroup){
+      const rid = chatGroup.rocketGroup._id;
+      chatMessages.send(rid, {value: inputValue});
+    });
+
+    swal({
+      title: 'Message Sent',
+      type: 'success',
+      timer: 1000,
+      showConfirmButton: false
+    });
+  });
+}
+
 Template.dealRoomList.onCreated(function() {
   const self = this;
   self.hubProfile = new ReactiveVar();
+  self.currentDealRoomId = new ReactiveVar('');
+  Session.set('openBroadcast', false);
 
   this.autorun(function() {
     const hubInfo = Session.get('hubInfo');
     if(hubInfo && !_.isEmpty(hubInfo)) {
       const profile = HUBProfiles.findOne({userId: hubInfo.userId});
       self.hubProfile.set(profile);
+
+      if(hubInfo.userType === 'PROVIDER') {
+        const dealRoom = DealRoom.findOne({'dealSummary._id': hubInfo.dealSummaryId});
+        const dealRoomId = (dealRoom) ? dealRoom._id : '';
+        console.log({hubInfo}, {dealRoom})
+        self.currentDealRoomId.set(dealRoomId);
+      }
+    }
+
+    if(Session.get('openBroadcast')){
+      broadcastMessage(Session.get('hubContext'));
+      Session.set('openBroadcast', false);
     }
   });
 });
 
 function getCpUserTeam(hubUserId, cpTeamIds) {
-  return Team.findOne({_id: {$in: cpTeamIds}, $or: [{ownerUserIds: {$in: [hubUserId]}}, {leaderUserIds: {$in: [hubUserId]}}, {memberUserIds: {$in: [hubUserId]}}]});
+  return Team.findOne({_id: {$in: cpTeamIds}, $or: [{ownerUserIds: {$in: [hubUserId]}}, {leadUserIds: {$in: [hubUserId]}}, {memberUserIds: {$in: [hubUserId]}}]});
 }
 
 function getUserTeamFromDealRoom(dealRoomId) {
@@ -33,7 +87,7 @@ function getUserTeamFromDealRoom(dealRoomId) {
 };
 
 function getUserTeamFromChat(hubUserId, group) {
-  return Team.findOne({_id: {$in: group.teamIds}, $or: [{ownerUserIds: {$in: [hubUserId]}}, {leaderUserIds: {$in: [hubUserId]}}, {memberUserIds: {$in: [hubUserId]}}]});
+  return Team.findOne({_id: {$in: group.teamIds}, $or: [{ownerUserIds: {$in: [hubUserId]}}, {leadUserIds: {$in: [hubUserId]}}, {memberUserIds: {$in: [hubUserId]}}]});
 };
 
 function getOtherTeam(hubProfile, group) {
@@ -53,6 +107,17 @@ function getChannelLabel(group) {
 };
 
 Template.dealRoomList.helpers({
+  currentDealRoomId() {
+    return Template.instance().currentDealRoomId.get();
+  },
+  currentDealRoom() {
+    const _id = Template.instance().currentDealRoomId.get();
+    return DealRoom.findOne({_id});
+  },
+  userType(type) {
+    const hubInfo = Session.get('hubInfo');
+    return (hubInfo && hubInfo.userType === type);
+  },
   dealRooms() {
     if(Template.instance().hubProfile.get()) {
       return DealRoom.find();
@@ -116,6 +181,28 @@ Template.dealRoomList.helpers({
 });
 
 Template.dealRoomList.events({
+  'change #dealRoom'(event, template){
+    const dealRoomId = $('#dealRoom option:selected').val();
+
+    const dealTeamId = getUserTeamFromDealRoom(dealRoomId);
+    const chatGroup = ChatGroup.findOne({teamIds: {$in: [dealTeamId]}});
+    const hubProfile = template.hubProfile.get();
+    const companyTeam = HUBAdapter.getUserCompanyTeam(hubProfile);
+
+    const hubContext = {
+      type: 'DEAL_ROOM',
+      dealRoomId,
+      dealTeamId,
+      csTeamId: '',
+      companyTeamId: companyTeam._id
+    };
+    template.currentDealRoomId.set(dealRoomId);
+    Session.set('hubContext', hubContext);
+
+    if(chatGroup) {
+      FlowRouter.go(`/group/${chatGroup.rocketGroup.name}`);
+    }
+  },
   'click .username'(event, template) {
     const hubProfile = Template.instance().hubProfile.get();
     const parentChatId = event.target.dataset.parentchatid;
@@ -175,7 +262,7 @@ Template.dealRoomList.events({
       icon: 'team',
       name: t('Manage Team'),
       type: 'deal-room-manage-team',
-      id: 'invite'
+      id: 'manage'
     };
     const broadcastItem = {
       icon: 'message',
@@ -220,6 +307,7 @@ Template.dealRoomList.events({
       type: 'DEAL_ROOM',
       dealRoomId,
       dealTeamId,
+      csTeamId: '',
       companyTeamId: companyTeam._id
     };
     Session.set('hubContext', hubContext);

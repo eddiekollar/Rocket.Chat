@@ -85,8 +85,8 @@ Template.fileUpload.events({
       const fileUpload = $(row).find('#fileInput')[0];
       const parentDirId = $(row).find('#parentDir option:selected').val();
 
-      const btnClass = $(row).find('#all-users').attr('class');
-      const allUsers = (btnClass === 'all-users');
+      const btnClass = $(row).find('button[data-type=allusers]').attr('class');
+      const allUsers = btnClass.indexOf('all-users') > -1;
 
       let dealRoomIds = [];
       $(row).find('#checkboxes[data-type=dealRoomIds] input:checked').each(function() { 
